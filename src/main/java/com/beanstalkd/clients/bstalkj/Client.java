@@ -10,14 +10,21 @@ import static com.beanstalkd.clients.bstalkj.BeanstalkProtocol.Command.RESERVE_W
 import static com.beanstalkd.clients.bstalkj.BeanstalkProtocol.Command.STATS_TUBE;
 import static com.beanstalkd.clients.bstalkj.BeanstalkProtocol.Command.USE;
 import static com.beanstalkd.clients.bstalkj.BeanstalkProtocol.Command.WATCH;
+import static com.beanstalkd.clients.bstalkj.BeanstalkProtocol.Command.LIST_TUBES;
+
 import java.io.ByteArrayOutputStream;
 import java.io.Closeable;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import java.util.function.Consumer;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import com.beanstalkd.clients.bstalkj.exceptions.BeanstalkDisconnectedException;
 import com.beanstalkd.clients.bstalkj.exceptions.BeanstalkException;
+
 import lombok.Setter;
 import lombok.ToString;
 import lombok.experimental.Accessors;
@@ -133,6 +140,34 @@ public class Client implements Closeable {
         String response = execute(STATS_TUBE, tube);
         int numBytes = Integer.parseInt(response.split(" ")[1]);
         return new String(connection.readBytes(numBytes));
+    }
+    
+    public List<String> listTubes() {
+    	return listTubes(null);
+    }
+    
+    public List<String> listTubes(String prefix) {
+    	List<String> result = null;
+        String response = execute(LIST_TUBES);
+        int numBytes = Integer.parseInt(response.split(" ")[1]);
+        String raw = new String(connection.readBytes(numBytes));
+        
+        if(raw != null && !raw.equals("")) {
+        	System.out.println(raw);
+        	String[] tmpArray = raw.split("\n");
+        	if(tmpArray.length >= 2) {
+        		result = new ArrayList<String>();
+        		for(int i=1; i<tmpArray.length; i++) {
+        			String str = tmpArray[i].substring(2);
+        			if(prefix == null || prefix.equals("") || str.startsWith(prefix)) {
+        				result.add(str);
+        			}	
+        		}
+        	}
+        	
+        }
+        
+        return result;
     }
 
     private String execute(BeanstalkProtocol.Command command, byte[] data, Object... args) {

@@ -25,7 +25,8 @@ public class BeanstalkProtocol {
         DELETE("delete %s\r\n", "^DELETED.*"),
         STATS_TUBE("stats-tube %s\r\n", "^OK.*"),
         BURY("bury %s %s\r\n", "^BURIED.*"),
-        RELEASE("release %s %s %s\r\n", "^RELEASED.*");
+        RELEASE("release %s %s %s\r\n", "^RELEASED.*"),
+        LIST_TUBES("list-tubes\r\n", "^OK.*");
 
         private String template;
         protected Pattern validResponsePattern;
