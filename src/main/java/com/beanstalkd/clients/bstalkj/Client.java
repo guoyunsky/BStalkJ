@@ -43,6 +43,7 @@ public class Client implements Closeable {
 
     public Client(BeanstalkConnection connection, String tube) {
         this(connection, tube, (c) -> {
+        	c.destroy();
         });
     }
 
@@ -153,7 +154,6 @@ public class Client implements Closeable {
         String raw = new String(connection.readBytes(numBytes));
         
         if(raw != null && !raw.equals("")) {
-        	System.out.println(raw);
         	String[] tmpArray = raw.split("\n");
         	if(tmpArray.length >= 2) {
         		result = new ArrayList<String>();
