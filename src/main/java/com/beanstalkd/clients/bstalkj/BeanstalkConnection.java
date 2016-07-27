@@ -100,8 +100,10 @@ public class BeanstalkConnection implements Closeable {
     public byte[] readBytes(int numBytes) throws BeanstalkException {
         byte[] bytes = new byte[numBytes];
         int bytesRead = 0;
+        int needReadLength = numBytes;	// each read length 
         while (bytesRead < numBytes) {
-            bytesRead += this.inputStream.read(bytes, bytesRead, numBytes);
+            bytesRead += this.inputStream.read(bytes, bytesRead, needReadLength);
+            needReadLength = needReadLength - bytesRead;
         }
         return bytes;
     }

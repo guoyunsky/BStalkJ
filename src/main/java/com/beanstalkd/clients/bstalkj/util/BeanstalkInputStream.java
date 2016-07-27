@@ -169,6 +169,7 @@ public final class BeanstalkInputStream extends FilterInputStream {
             final int length = Math.min(limit - count, len);
             System.arraycopy(buf, count, b, off, length);
             count += length;
+            
             return length;
         }
 
